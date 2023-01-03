@@ -1,0 +1,71 @@
+version: "3.9"
+
+services:
+  # wireguard:
+  #   image: linuxserver/wireguard
+  #   container_name: wireguard
+  #   restart: unless-stopped
+  #   networks:
+  #     - vpn
+  #   volumes:
+  #     - './wireguard:/config'
+  #     - '/lib/modules:/lib/modules:ro'
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #   cap_add:
+  #     - NET_ADMIN
+  #     - SYS_MODULE
+  #   sysctls:
+  #     - net.ipv4.conf.all.src_valid_mark=1
+  bankapp:
+    # depends_on:
+    #   - wireguard
+    build:
+      context: bankapp
+    ports:
+      - "5000:5000"
+    # network_mode: service:wireguard
+
+# secrets:
+#   keycloak_admin_password:
+#     file: secrets/keycloak_admin_password
+#   kheops_authdb_pass:
+#     file: secrets/kheops_authdb_pass
+#   kheops_pacsdb_pass:
+#     file: secrets/kheops_pacsdb_pass
+#   kheops_auth_hmasecret:
+#     file: secrets/kheops_auth_hmasecret
+#   kheops_auth_hmasecret_post:
+#     file: secrets/kheops_auth_hmasecret_post
+#   kheops_client_dicomwebproxysecret:
+#     file: secrets/kheops_client_dicomwebproxysecret
+#   kheops_client_zippersecret:
+#     file: secrets/kheops_client_zippersecret
+
+# volumes:
+#   keycloak-standalone-data:
+#   dcm4chee-db-data:
+#   dcm4chee-arc-wildfly:
+#   dcm4chee-arc-storage:
+#   kheops-db-data:
+#   filebeat_registry:
+
+# networks:
+#   vpn:
+#     driver: bridge
+#   # Network used for communication between the backend KHEOPS components
+#   kheops_network:
+#     driver: bridge
+#   # The PACS network isolates the PACS from the reset of KHEOPS ensuring that
+#   # all communication between KHEOPS and the PACS goes the the authorization
+#   # proxy.
+#   pacs_network:
+#     driver: bridge
+#   # Network reserved for communication with the frontend UI.
+#   frontend_network:
+#     driver: bridge
+#   # Network for the backend communication between the KHEOPS Authorization
+#   # Server and Keycloak.
+#   keycloak_network:
+#      driver: bridge

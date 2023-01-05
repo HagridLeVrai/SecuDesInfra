@@ -1,0 +1,19 @@
+bank.powerzio.net {
+    forward . bankapp:5000
+}
+
+#f {
+#    alias files.powerzio.net
+#}
+
+#beta-f {
+#    alias beta.files.powerzio.net
+#}
+
+g {
+    forward . 8.8.8.8
+}
+
+#dev {
+#    txt "hello world"
+#}

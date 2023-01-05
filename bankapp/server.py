@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from flask import Flask, request, redirect, send_from_directory, render_template, make_response
+from shadowd.flask_connector import InputFlask, OutputFlask, Connector
+configFilePath = 'connectors.ini'
 from random import randrange
 import jwt
 import subprocess
@@ -41,6 +43,13 @@ def sql_exec(req, all=False, custom_dbfile=None):
     return cur.fetchone() if not all else cur.fetchall()
 
 # Server Routes
+
+@app.before_request
+def before_req():
+    input = InputFlask(request)
+    output = OutputFlask()
+
+    Connector().start(input, output)
 
 @app.route('/')
 def home():

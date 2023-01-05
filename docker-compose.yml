@@ -24,48 +24,49 @@ services:
     build:
       context: bankapp
     ports:
+      - "5002:22"
       - "5000:5000"
     # network_mode: service:wireguard
+  # dns:
+  #   build:
+  #     context: dns
+  #   restart: on-failure
+  #   ports:
+  #     - "5001:53"
+  # shadow-daemon
+  db:
+    image: zecure/shadowd_database:12.4
+    restart: always
+    volumes:
+      - "${SHADOWD_DB_LOCATION}:/var/lib/postgresql/data"
+    env_file:
+      - "${SHADOWD_ENV_DB_LOCATION}"
 
-# secrets:
-#   keycloak_admin_password:
-#     file: secrets/keycloak_admin_password
-#   kheops_authdb_pass:
-#     file: secrets/kheops_authdb_pass
-#   kheops_pacsdb_pass:
-#     file: secrets/kheops_pacsdb_pass
-#   kheops_auth_hmasecret:
-#     file: secrets/kheops_auth_hmasecret
-#   kheops_auth_hmasecret_post:
-#     file: secrets/kheops_auth_hmasecret_post
-#   kheops_client_dicomwebproxysecret:
-#     file: secrets/kheops_client_dicomwebproxysecret
-#   kheops_client_zippersecret:
-#     file: secrets/kheops_client_zippersecret
+  web:
+    image: zecure/shadowd_ui:2
+    restart: always
+    ports:
+      - 127.0.0.1:8080:80
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - "SHADOWD_DB_HOST=db"
+    env_file:
+      - "${SHADOWD_ENV_DB_LOCATION}"
 
-# volumes:
-#   keycloak-standalone-data:
-#   dcm4chee-db-data:
-#   dcm4chee-arc-wildfly:
-#   dcm4chee-arc-storage:
-#   kheops-db-data:
-#   filebeat_registry:
-
-# networks:
-#   vpn:
-#     driver: bridge
-#   # Network used for communication between the backend KHEOPS components
-#   kheops_network:
-#     driver: bridge
-#   # The PACS network isolates the PACS from the reset of KHEOPS ensuring that
-#   # all communication between KHEOPS and the PACS goes the the authorization
-#   # proxy.
-#   pacs_network:
-#     driver: bridge
-#   # Network reserved for communication with the frontend UI.
-#   frontend_network:
-#     driver: bridge
-#   # Network for the backend communication between the KHEOPS Authorization
-#   # Server and Keycloak.
-#   keycloak_network:
-#      driver: bridge
+  shadowd:
+    container_name: shadowdserver
+    image: zecure/shadowd:2
+    restart: always
+    expose:
+      - "9115"
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - "SHADOWD_DB_HOST=db"
+    env_file:
+      - "${SHADOWD_ENV_DB_LOCATION}"

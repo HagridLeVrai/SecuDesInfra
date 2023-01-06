@@ -34,39 +34,47 @@ services:
   #   ports:
   #     - "5001:53"
   # shadow-daemon
-  db:
-    image: zecure/shadowd_database:12.4
-    restart: always
-    volumes:
-      - "${SHADOWD_DB_LOCATION}:/var/lib/postgresql/data"
-    env_file:
-      - "${SHADOWD_ENV_DB_LOCATION}"
-
-  web:
-    image: zecure/shadowd_ui:2
-    restart: always
+  expressjs:
+    # depends_on:
+    #   - wireguard
+    build:
+      context: expressjs
     ports:
-      - 127.0.0.1:8080:80
-    links:
-      - db
-    depends_on:
-      - db
-    environment:
-      - "SHADOWD_DB_HOST=db"
-    env_file:
-      - "${SHADOWD_ENV_DB_LOCATION}"
+      - "5010:8080"
+      - "443:8443"
+  # db:
+  #   image: zecure/shadowd_database:12.4
+  #   restart: always
+  #   volumes:
+  #     - "${SHADOWD_DB_LOCATION}:/var/lib/postgresql/data"
+  #   env_file:
+  #     - "${SHADOWD_ENV_DB_LOCATION}"
 
-  shadowd:
-    container_name: shadowdserver
-    image: zecure/shadowd:2
-    restart: always
-    expose:
-      - "9115"
-    links:
-      - db
-    depends_on:
-      - db
-    environment:
-      - "SHADOWD_DB_HOST=db"
-    env_file:
-      - "${SHADOWD_ENV_DB_LOCATION}"
+  # web:
+  #   image: zecure/shadowd_ui:2
+  #   restart: always
+  #   ports:
+  #     - 127.0.0.1:8080:80
+  #   links:
+  #     - db
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - "SHADOWD_DB_HOST=db"
+  #   env_file:
+  #     - "${SHADOWD_ENV_DB_LOCATION}"
+
+  # shadowd:
+  #   container_name: shadowdserver
+  #   image: zecure/shadowd:2
+  #   restart: always
+  #   expose:
+  #     - "9115"
+  #   links:
+  #     - db
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - "SHADOWD_DB_HOST=db"
+  #   env_file:
+  #     - "${SHADOWD_ENV_DB_LOCATION}"
